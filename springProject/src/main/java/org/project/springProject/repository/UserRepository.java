@@ -1,5 +1,6 @@
 package org.project.springProject.repository;
 
+import java.util.List;
 import org.project.springProject.entity.User;
 import org.project.springProject.exception.AuthenticationDataMismatchException;
 import org.project.springProject.exception.UserAlreadyExistsException;
@@ -11,4 +12,12 @@ public interface UserRepository {
       throws AuthenticationDataMismatchException, UserNotFoundException;
 
   void registerUser(User user) throws UserAlreadyExistsException;
+
+  void updateUser(User user) throws UserNotFoundException;
+
+  User deleteUser(String username) throws UserNotFoundException;
+
+  User getByUsername(String username) throws UserNotFoundException;
+
+  List<String> getAll();
 }

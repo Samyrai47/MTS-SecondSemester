@@ -18,11 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springproject.entity.User;
-import org.springproject.exception.AuthenticationDataMismatchException;
-import org.springproject.exception.UserAlreadyExistsException;
-import org.springproject.exception.UserNotFoundException;
-import org.springproject.service.UserService;
+import org.project.springProject.entity.User;
+import org.project.springProject.exception.AuthenticationDataMismatchException;
+import org.project.springProject.exception.UserAlreadyExistsException;
+import org.project.springProject.exception.UserNotFoundException;
+import org.project.springProject.service.UserService;
 
 @WebMvcTest(UserController.class)
 class UserControllerMvcTest {

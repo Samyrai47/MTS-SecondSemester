@@ -1,56 +1,75 @@
 package org.project.springProject.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.project.springProject.entity.User;
 import org.project.springProject.exception.AuthenticationDataMismatchException;
 import org.project.springProject.exception.UserAlreadyExistsException;
 import org.project.springProject.exception.UserNotFoundException;
-import org.project.springProject.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-@Controller
-public class UserController {
-  private final UserService userService;
-  Logger logger = LoggerFactory.getLogger(UserController.class);
-
-  public UserController(UserService userService) {
-    this.userService = userService;
-  }
-
-  @ExceptionHandler(UserNotFoundException.class)
-  public ResponseEntity<String> handleUserNotFound(UserNotFoundException exception) {
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
-  }
-
-  @ExceptionHandler(AuthenticationDataMismatchException.class)
-  public ResponseEntity<String> handleDataMismatch(AuthenticationDataMismatchException exception) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
-  }
-
-  @ExceptionHandler(UserAlreadyExistsException.class)
-  public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException exception) {
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-  }
-
-  @GetMapping("/signin")
+@RequestMapping("/second-memory")
+@Tag(name = "User API", description = "Управление пользователями")
+public interface UserController {
+  @Operation(summary = "Аутентифицировать пользователя по имени и паролю")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Пользователь аутентифицирован",
+      content = @Content)
+  @ApiResponse(
+      responseCode = "401",
+      description = "UNAUTHORIZED | Неверные данные для пользователя",
+      content = @Content)
+  @ApiResponse(
+      responseCode = "404",
+      description = "NOT_FOUND | Пользователь с такими данными не найден",
+      content = @Content)
   public ResponseEntity<String> authenticate(@RequestBody User user)
-      throws UserNotFoundException, AuthenticationDataMismatchException {
-    userService.authenticate(user.username(), user.password());
-    logger.info("Successfully logged in with name {}", user.username());
-    return ResponseEntity.ok("You have successfully logged in!");
-  }
+      throws UserNotFoundException, AuthenticationDataMismatchException;
 
-  @PostMapping("/signup")
-  public ResponseEntity<String> registerUser(@RequestBody User user)
-      throws UserAlreadyExistsException {
-    userService.registerUser(user.username(), user.password());
-    return new ResponseEntity<>("You have successfully registered!", HttpStatus.CREATED);
-  }
+  @Operation(summary = "Зарегистрировать пользователя по имени и паролю")
+  @ApiResponse(responseCode = "201", description = "Пользователь зарегистрирован")
+  @ApiResponse(
+      responseCode = "400",
+      description = "BAD_REQUEST | Пользователь уже зарегистрирован",
+      content = @Content)
+  public ResponseEntity<User> registerUser(@RequestBody User user)
+      throws UserAlreadyExistsException;
+
+  @Operation(summary = "Изменить данные пользователя")
+  @ApiResponse(responseCode = "200", description = "Данные о пользователе изменены")
+  @ApiResponse(
+      responseCode = "404",
+      description = "NOT_FOUND | Пользователь с такими данными не найден",
+      content = @Content)
+  public ResponseEntity<User> updateUser(@RequestBody User user) throws UserNotFoundException;
+
+  @Operation(summary = "Удалить пользователя")
+  @ApiResponse(responseCode = "200", description = "Пользователь удален")
+  @ApiResponse(
+      responseCode = "404",
+      description = "NOT_FOUND | Пользователь с такими данными не найден",
+      content = @Content)
+  public ResponseEntity<User> deleteUser(@PathVariable String username)
+      throws UserNotFoundException;
+
+  @Operation(summary = "Найти пользователя по имени")
+  @ApiResponse(responseCode = "200", description = "Пользователь найден")
+  @ApiResponse(
+      responseCode = "404",
+      description = "NOT_FOUND | Пользователь с такими данными не найден",
+      content = @Content)
+  public ResponseEntity<User> getByUsername(
+      @Parameter(description = "Имя пользователя") String username) throws UserNotFoundException;
+
+  @Operation(summary = "Вывести всех пользователей")
+  @ApiResponse(responseCode = "200", description = "Пользователи выведены")
+  public ResponseEntity<List<String>> getAll();
 }

@@ -1,4 +1,4 @@
-package org.springproject.controller;
+package org.project.springProject.controller;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springproject.entity.User;
-import org.springproject.exception.AuthenticationDataMismatchException;
-import org.springproject.exception.UserAlreadyExistsException;
-import org.springproject.exception.UserNotFoundException;
-import org.springproject.service.UserService;
+import org.project.springProject.entity.User;
+import org.project.springProject.exception.AuthenticationDataMismatchException;
+import org.project.springProject.exception.UserAlreadyExistsException;
+import org.project.springProject.exception.UserNotFoundException;
+import org.project.springProject.service.UserService;
 
 @RestController
 @Slf4j

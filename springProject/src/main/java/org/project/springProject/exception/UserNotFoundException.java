@@ -1,7 +1,6 @@
 package org.project.springProject.exception;
 
-public class UserNotFoundException extends Exception {
-  public UserNotFoundException(String message) {
-    super(message);
-  }
-}
+import lombok.experimental.StandardException;
+
+@StandardException
+public class UserNotFoundException extends Exception {}

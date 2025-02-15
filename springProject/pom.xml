@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>org.project</groupId>
-	<artifactId>springproject</artifactId>
+	<artifactId>springProject</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>springProject</name>
 	<description>Demo project for Spring Boot</description>

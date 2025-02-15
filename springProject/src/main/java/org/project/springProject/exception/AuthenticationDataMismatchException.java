@@ -1,7 +1,6 @@
 package org.project.springProject.exception;
 
-public class AuthenticationDataMismatchException extends Exception {
-  public AuthenticationDataMismatchException(String message) {
-    super(message);
-  }
-}
+import lombok.experimental.StandardException;
+
+@StandardException
+public class AuthenticationDataMismatchException extends Exception {}

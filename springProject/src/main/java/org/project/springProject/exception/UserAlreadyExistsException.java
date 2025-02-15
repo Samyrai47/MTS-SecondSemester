@@ -1,7 +1,6 @@
 package org.project.springProject.exception;
 
-public class UserAlreadyExistsException extends Exception {
-  public UserAlreadyExistsException(String message) {
-    super(message);
-  }
-}
+import lombok.experimental.StandardException;
+
+@StandardException
+public class UserAlreadyExistsException extends Exception {}
