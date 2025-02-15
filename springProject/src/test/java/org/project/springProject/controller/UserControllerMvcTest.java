@@ -1,4 +1,4 @@
-package org.springproject.controller;
+package org.project.springProject.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
