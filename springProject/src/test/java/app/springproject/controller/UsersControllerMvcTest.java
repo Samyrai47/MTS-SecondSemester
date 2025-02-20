@@ -1,4 +1,4 @@
-package org.project.springProject.controller;
+package app.springproject.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -18,25 +18,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.project.springProject.entity.User;
-import org.project.springProject.exception.AuthenticationDataMismatchException;
-import org.project.springProject.exception.UserAlreadyExistsException;
-import org.project.springProject.exception.UserNotFoundException;
-import org.project.springProject.service.UserService;
+import app.springproject.entity.User;
+import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.UserAlreadyExistsException;
+import app.springproject.exception.UserNotFoundException;
+import app.springproject.service.UsersService;
 
-@WebMvcTest(UserController.class)
-class UserControllerMvcTest {
+@WebMvcTest(UsersController.class)
+class UsersControllerMvcTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockitoBean private UserService userService;
+  @MockitoBean private UsersService usersService;
 
   private static final User MOCK_USER = new User("Test", "test1");
   private static final String USER_JSON = "{\"username\":\"Test\", \"password\":\"test1\"}";
 
   @Test
-  public void shouldSuccessfullyRegisterUser() throws Exception {
-    doNothing().when(userService).registerUser(any(String.class), any(String.class));
+  void shouldSuccessfullyRegisterUser() throws Exception {
+    doNothing().when(usersService).registerUser(any(String.class), any(String.class));
     mockMvc
         .perform(post("/second-memory/signup").contentType("application/json").content(USER_JSON))
         .andExpect(status().isCreated())
@@ -45,9 +45,9 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldFailRegistration() throws Exception {
+  void shouldFailRegistration() throws Exception {
     doThrow(UserAlreadyExistsException.class)
-        .when(userService)
+        .when(usersService)
         .registerUser(any(String.class), any(String.class));
     mockMvc
         .perform(post("/second-memory/signup").contentType("application/json").content(USER_JSON))
@@ -55,17 +55,17 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldSuccessfullyAuthenticate() throws Exception {
-    doNothing().when(userService).authenticate(any(String.class), any(String.class));
+  void shouldSuccessfullyAuthenticate() throws Exception {
+    doNothing().when(usersService).authenticate(any(String.class), any(String.class));
     mockMvc
         .perform(post("/second-memory/signin").contentType("application/json").content(USER_JSON))
         .andExpect(status().isOk());
   }
 
   @Test
-  public void shouldFailAuthenticationWithNotFound() throws Exception {
+  void shouldFailAuthenticationWithNotFound() throws Exception {
     doThrow(UserNotFoundException.class)
-        .when(userService)
+        .when(usersService)
         .authenticate(any(String.class), any(String.class));
     mockMvc
         .perform(post("/second-memory/signin").contentType("application/json").content(USER_JSON))
@@ -73,9 +73,9 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldFailAuthenticationWithUnauthorized() throws Exception {
+  void shouldFailAuthenticationWithUnauthorized() throws Exception {
     doThrow(AuthenticationDataMismatchException.class)
-        .when(userService)
+        .when(usersService)
         .authenticate(any(String.class), any(String.class));
     mockMvc
         .perform(post("/second-memory/signin").contentType("application/json").content(USER_JSON))
@@ -83,8 +83,8 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldSuccessfullyFindUser() throws Exception {
-    when(userService.getByUsername(any(String.class))).thenReturn(MOCK_USER);
+  void shouldSuccessfullyFindUser() throws Exception {
+    when(usersService.getByUsername(any(String.class))).thenReturn(MOCK_USER);
     mockMvc
         .perform(get("/second-memory/Test"))
         .andExpect(status().isOk())
@@ -93,14 +93,14 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldFailToFindUser() throws Exception {
-    when(userService.getByUsername(any(String.class))).thenThrow(UserNotFoundException.class);
+  void shouldFailToFindUser() throws Exception {
+    when(usersService.getByUsername(any(String.class))).thenThrow(UserNotFoundException.class);
     mockMvc.perform(get("/second-memory/Test")).andExpect(status().isNotFound());
   }
 
   @Test
-  public void shouldSuccessfullyDeleteUser() throws Exception {
-    when(userService.deleteUser(any(String.class))).thenReturn(MOCK_USER);
+  void shouldSuccessfullyDeleteUser() throws Exception {
+    when(usersService.deleteUser(any(String.class))).thenReturn(MOCK_USER);
     mockMvc
         .perform(delete("/second-memory/delete/Test"))
         .andExpect(status().isOk())
@@ -109,14 +109,14 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldFailToDeleteUser() throws Exception {
-    when(userService.deleteUser(any(String.class))).thenThrow(UserNotFoundException.class);
+  void shouldFailToDeleteUser() throws Exception {
+    when(usersService.deleteUser(any(String.class))).thenThrow(UserNotFoundException.class);
     mockMvc.perform(delete("/second-memory/delete/Test")).andExpect(status().isNotFound());
   }
 
   @Test
-  public void shouldSuccessfullyUpdateUser() throws Exception {
-    doNothing().when(userService).updateUser(any(User.class));
+  void shouldSuccessfullyUpdateUser() throws Exception {
+    doNothing().when(usersService).updateUser(any(User.class));
     mockMvc
         .perform(patch("/second-memory/update").contentType("application/json").content(USER_JSON))
         .andExpect(status().isOk())
@@ -125,17 +125,17 @@ class UserControllerMvcTest {
   }
 
   @Test
-  public void shouldFailToUpdateUser() throws Exception {
-    doThrow(UserNotFoundException.class).when(userService).updateUser(any(User.class));
+  void shouldFailToUpdateUser() throws Exception {
+    doThrow(UserNotFoundException.class).when(usersService).updateUser(any(User.class));
     mockMvc
         .perform(patch("/second-memory/update").contentType("application/json").content(USER_JSON))
         .andExpect(status().isNotFound());
   }
 
   @Test
-  public void shouldSuccessfullyReturnUsers() throws Exception {
+  void shouldSuccessfullyReturnUsers() throws Exception {
     ArrayList<String> mockList = new ArrayList<String>(Arrays.asList("Test", "Test"));
-    when(userService.getAll()).thenReturn(mockList);
+    when(usersService.getAll()).thenReturn(mockList);
     mockMvc.perform(get("/second-memory/main")).andExpect(status().isOk());
   }
 }

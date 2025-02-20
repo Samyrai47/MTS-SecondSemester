@@ -1,20 +1,20 @@
-package org.project.springProject.service;
+package app.springproject.service;
 
+import app.springproject.entity.User;
+import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.UserAlreadyExistsException;
+import app.springproject.exception.UserNotFoundException;
+import app.springproject.repository.UsersRepository;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.project.springProject.entity.User;
-import org.project.springProject.exception.AuthenticationDataMismatchException;
-import org.project.springProject.exception.UserAlreadyExistsException;
-import org.project.springProject.exception.UserNotFoundException;
-import org.project.springProject.repository.UserRepository;
 
 @Service
 @Slf4j
-public class UserService {
-  private final UserRepository userRepository;
+public class UsersService {
+  private final UsersRepository userRepository;
 
-  public UserService(UserRepository userRepository) {
+  public UsersService(UsersRepository userRepository) {
     this.userRepository = userRepository;
   }
 

@@ -1,5 +1,9 @@
-package org.project.springProject.controller;
+package app.springproject.controller;
 
+import app.springproject.entity.User;
+import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.UserAlreadyExistsException;
+import app.springproject.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,15 +13,9 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.project.springProject.entity.User;
-import org.project.springProject.exception.AuthenticationDataMismatchException;
-import org.project.springProject.exception.UserAlreadyExistsException;
-import org.project.springProject.exception.UserNotFoundException;
 
-@RequestMapping("/second-memory")
 @Tag(name = "User API", description = "Управление пользователями")
-public interface UserController {
+public interface UsersController {
   @Operation(summary = "Аутентифицировать пользователя по имени и паролю")
   @ApiResponse(
       responseCode = "200",

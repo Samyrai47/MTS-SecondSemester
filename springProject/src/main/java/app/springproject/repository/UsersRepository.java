@@ -1,12 +1,12 @@
-package org.project.springProject.repository;
+package app.springproject.repository;
 
+import app.springproject.entity.User;
+import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.UserAlreadyExistsException;
+import app.springproject.exception.UserNotFoundException;
 import java.util.List;
-import org.project.springProject.entity.User;
-import org.project.springProject.exception.AuthenticationDataMismatchException;
-import org.project.springProject.exception.UserAlreadyExistsException;
-import org.project.springProject.exception.UserNotFoundException;
 
-public interface UserRepository {
+public interface UsersRepository {
 
   void authenticate(String name, String password)
       throws AuthenticationDataMismatchException, UserNotFoundException;

@@ -1,18 +1,18 @@
-package org.project.springProject.repository;
+package app.springproject.repository;
 
+import app.springproject.entity.User;
+import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.UserAlreadyExistsException;
+import app.springproject.exception.UserNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import org.project.springProject.entity.User;
-import org.project.springProject.exception.AuthenticationDataMismatchException;
-import org.project.springProject.exception.UserAlreadyExistsException;
-import org.project.springProject.exception.UserNotFoundException;
 
 @Repository
 @Slf4j
-public class UserRepositoryImpl implements UserRepository {
+public class UsersRepositoryImpl implements UsersRepository {
   private HashMap<String, String> users = new HashMap<>();
   private final String NOT_FOUND_MESSAGE = "User %s was not found";
 

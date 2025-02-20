@@ -1,4 +1,4 @@
-package org.project.springProject.exception;
+package app.springproject.exception;
 
 import lombok.experimental.StandardException;
 
