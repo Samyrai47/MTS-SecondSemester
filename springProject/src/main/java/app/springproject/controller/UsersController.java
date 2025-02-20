@@ -29,7 +29,7 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  public ResponseEntity<String> authenticate(@RequestBody User user)
+  ResponseEntity<String> authenticate(@RequestBody User user)
       throws UserNotFoundException, AuthenticationDataMismatchException;
 
   @Operation(summary = "Зарегистрировать пользователя по имени и паролю")
@@ -38,8 +38,7 @@ public interface UsersController {
       responseCode = "400",
       description = "BAD_REQUEST | Пользователь уже зарегистрирован",
       content = @Content)
-  public ResponseEntity<User> registerUser(@RequestBody User user)
-      throws UserAlreadyExistsException;
+  ResponseEntity<User> registerUser(@RequestBody User user) throws UserAlreadyExistsException;
 
   @Operation(summary = "Изменить данные пользователя")
   @ApiResponse(responseCode = "200", description = "Данные о пользователе изменены")
@@ -47,7 +46,7 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  public ResponseEntity<User> updateUser(@RequestBody User user) throws UserNotFoundException;
+  ResponseEntity<User> updateUser(@RequestBody User user) throws UserNotFoundException;
 
   @Operation(summary = "Удалить пользователя")
   @ApiResponse(responseCode = "200", description = "Пользователь удален")
@@ -55,8 +54,7 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  public ResponseEntity<User> deleteUser(@PathVariable String username)
-      throws UserNotFoundException;
+  ResponseEntity<User> deleteUser(@PathVariable String username) throws UserNotFoundException;
 
   @Operation(summary = "Найти пользователя по имени")
   @ApiResponse(responseCode = "200", description = "Пользователь найден")
@@ -64,10 +62,10 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  public ResponseEntity<User> getByUsername(
-      @Parameter(description = "Имя пользователя") String username) throws UserNotFoundException;
+  ResponseEntity<User> getByUsername(@Parameter(description = "Имя пользователя") String username)
+      throws UserNotFoundException;
 
   @Operation(summary = "Вывести всех пользователей")
   @ApiResponse(responseCode = "200", description = "Пользователи выведены")
-  public ResponseEntity<List<String>> getAll();
+  ResponseEntity<List<String>> getAll();
 }
