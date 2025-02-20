@@ -134,7 +134,7 @@ class UsersControllerMvcTest {
 
   @Test
   void shouldSuccessfullyReturnUsers() throws Exception {
-    ArrayList<String> mockList = new ArrayList<String>(Arrays.asList("Test", "Test"));
+    ArrayList<String> mockList = new ArrayList<>(Arrays.asList("Test", "Test"));
     when(usersService.getAll()).thenReturn(mockList);
     mockMvc.perform(get("/second-memory/main")).andExpect(status().isOk());
   }

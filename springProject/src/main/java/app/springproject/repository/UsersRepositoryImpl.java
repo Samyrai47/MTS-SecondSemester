@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Slf4j
 public class UsersRepositoryImpl implements UsersRepository {
   private HashMap<String, String> users = new HashMap<>();
-  private final String NOT_FOUND_MESSAGE = "User %s was not found";
+  private static final String NOT_FOUND_MESSAGE = "User %s was not found";
 
   @Override
   public void authenticate(String name, String password)

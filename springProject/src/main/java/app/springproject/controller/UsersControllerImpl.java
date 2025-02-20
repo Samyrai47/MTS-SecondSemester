@@ -6,6 +6,7 @@ import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,13 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/second-memory")
 public class UsersControllerImpl implements UsersController {
   private final UsersService usersService;
-
-  public UsersControllerImpl(UsersService usersService) {
-    this.usersService = usersService;
-  }
 
   @Override
   @PostMapping("/signin")

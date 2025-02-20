@@ -23,7 +23,7 @@ class SpringProjectApplicationTest {
 
   @Test
   void EndToEndTest() {
-    /** Step 1: Create user */
+    // Step 1: Create user
     User mockUser = new User("Boris12", "Boris123");
     User mockUser2 = new User("Test", "Test");
     ResponseEntity<User> registrationResponse =
@@ -39,14 +39,14 @@ class SpringProjectApplicationTest {
     assertEquals(HttpStatus.CREATED, registrationResponse2.getStatusCode());
     assertEquals(mockUser2, registrationResponse2.getBody());
 
-    /** Step 2: Complete authentication */
+    // Step 2: Complete authentication
     ResponseEntity<String> authenticationResponse =
         restTemplate.postForEntity(
             "http://localhost:" + port + "/second-memory/signin", mockUser, String.class);
 
     assertEquals(HttpStatus.OK, authenticationResponse.getStatusCode());
 
-    /** Step 3: Update user */
+    // Step 3: Update user
     User updatedMockUser = new User("Boris12", "NewPassword");
     User updateResponse =
         restTemplate.patchForObject(
@@ -54,7 +54,7 @@ class SpringProjectApplicationTest {
 
     assertEquals(updatedMockUser, updateResponse);
 
-    /** Step 4: Get user */
+    // Step 4: Get user
     ResponseEntity<User> getUserResponse =
         restTemplate.getForEntity(
             "http://localhost:" + port + "/second-memory/Boris12", User.class);
@@ -62,14 +62,14 @@ class SpringProjectApplicationTest {
     assertEquals(HttpStatus.OK, getUserResponse.getStatusCode());
     assertEquals(updatedMockUser, getUserResponse.getBody());
 
-    /** Step 5: Get all users */
+    // Step 5: Get all users
     List<String> userArrayResponse =
         restTemplate.getForObject("http://localhost:" + port + "/second-memory/main", List.class);
 
     assertEquals(2, userArrayResponse.size());
     assertEquals(updatedMockUser.username(), userArrayResponse.get(1));
 
-    /** Step 6: Delete user */
+    // Step 6: Delete user
     ResponseEntity<User> deleteResponse =
         restTemplate.exchange(
             "http://localhost:" + port + "/second-memory/delete/Boris12",

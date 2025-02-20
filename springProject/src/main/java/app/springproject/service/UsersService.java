@@ -6,17 +6,15 @@ import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.repository.UsersRepository;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UsersService {
   private final UsersRepository userRepository;
-
-  public UsersService(UsersRepository userRepository) {
-    this.userRepository = userRepository;
-  }
 
   public void authenticate(String name, String password)
       throws AuthenticationDataMismatchException, UserNotFoundException {
