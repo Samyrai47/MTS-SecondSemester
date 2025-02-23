@@ -11,20 +11,24 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
+import app.springproject.SpringProjectApplication;
+import app.springproject.config.SecurityConfig;
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UsersController.class)
+@ContextConfiguration(classes = {SpringProjectApplication.class, SecurityConfig.class})
 class UsersControllerMvcTest {
 
   @Autowired private MockMvc mockMvc;
