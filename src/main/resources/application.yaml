@@ -25,3 +25,23 @@ info:
     name: "Second Memory"
     description: "This is a file sharing service"
     version: "1.0.0"
+server:
+  port: 8092
+  tomcat:
+    threads:
+      min: 20
+      max: 210
+resilience4j.ratelimiter:
+  instances:
+    rateLimiterAPI:
+      limitForPeriod: 10
+      limitRefreshPeriod: 10s
+      timeoutDuration: 0
+resilience4j.circuitbreaker:
+  instances:
+    apiCircuitBreaker:
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      slidingWindowType: count_based
+      slidingWindowSize: 10

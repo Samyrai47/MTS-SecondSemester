@@ -2,6 +2,7 @@ package app.springproject.controller;
 
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.DatabaseException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "User API", description = "Управление пользователями")
+@Tag(name = "Users API", description = "Управление пользователями")
 public interface UsersController {
   @Operation(summary = "Аутентифицировать пользователя по имени и паролю")
   @ApiResponse(
@@ -63,7 +64,7 @@ public interface UsersController {
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
   ResponseEntity<User> getByUsername(@Parameter(description = "Имя пользователя") String username)
-      throws UserNotFoundException;
+      throws UserNotFoundException, DatabaseException;
 
   @Operation(summary = "Вывести всех пользователей")
   @ApiResponse(responseCode = "200", description = "Пользователи выведены")

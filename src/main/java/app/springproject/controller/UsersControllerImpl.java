@@ -2,9 +2,11 @@ package app.springproject.controller;
 
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
+import app.springproject.exception.DatabaseException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/second-memory")
+@RateLimiter(name = "rateLimiterAPI")
 public class UsersControllerImpl implements UsersController {
   private final UsersService usersService;
 
@@ -58,7 +61,7 @@ public class UsersControllerImpl implements UsersController {
   }
 
   @Override
-  @GetMapping(value = "/main")
+  @GetMapping("/main")
   public ResponseEntity<List<String>> getAll() {
     return ResponseEntity.ok(usersService.getAll());
   }
@@ -66,7 +69,7 @@ public class UsersControllerImpl implements UsersController {
   @Override
   @GetMapping("/{username}")
   public ResponseEntity<User> getByUsername(@PathVariable String username)
-      throws UserNotFoundException {
+      throws UserNotFoundException, DatabaseException {
     User user = usersService.getByUsername(username);
     return ResponseEntity.ok(user);
   }
