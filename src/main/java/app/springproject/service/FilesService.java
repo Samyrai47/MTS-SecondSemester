@@ -1,58 +1,32 @@
 package app.springproject.service;
 
-import app.springproject.exception.FileAlreadyExistsException;
+import app.springproject.entity.File;
 import app.springproject.exception.FileNotFoundException;
-import app.springproject.repository.FilesRepositoryImpl;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import app.springproject.repository.FilesRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class FilesService {
-  private final FilesRepositoryImpl filesRepository;
-  // Потокобезопасен
-  private final Set<String> processedFiles = ConcurrentHashMap.newKeySet();
 
-  // ExactlyOnce
-  @Cacheable(
-      cacheNames = {"createdFile"},
-      key = "{#name}")
-  public void createFile(String name, String value) throws FileAlreadyExistsException {
-    log.info("Service -> adding new file {}", name);
-    if (!processedFiles.add(name)) {
-      log.info("File {} was already processed", name);
-      return;
-    }
-    filesRepository.create(name, value);
-  }
+  private final FilesRepository filesRepository;
 
-  @Cacheable(
-      cacheNames = {"removedFile"},
-      key = "{#name}")
-  public void removeFile(String name) {
-    log.info("Service -> removing file {}", name);
-    filesRepository.delete(name);
-  }
-
-  @Cacheable(
-      cacheNames = {"renamedFile"},
-      key = "{#newName}")
-  public void renameFile(String oldName, String newName)
-      throws FileAlreadyExistsException, FileNotFoundException {
+  public void updateFileName(String oldName, String newName) throws FileNotFoundException {
+    File file = filesRepository.findByNameEquals(oldName).orElseThrow(FileNotFoundException::new);
     log.info("Service -> Renaming file {} to {}", oldName, newName);
-    filesRepository.rename(oldName, newName);
+    file.setName(newName);
+    filesRepository.save(file);
   }
 
-  @Cacheable(
-      cacheNames = {"changedContent"},
-      key = "{#newValue}")
-  public void changeContent(String name, String newValue) throws FileNotFoundException {
+  public void changeContent(String name, String newContent) throws FileNotFoundException {
+    File file = filesRepository.findByNameEquals(name).orElseThrow(FileNotFoundException::new);
     log.info("Service -> Changing content of the file {}", name);
-    filesRepository.changeContent(name, newValue);
+    file.setContent(newContent);
+    filesRepository.save(file);
   }
 }

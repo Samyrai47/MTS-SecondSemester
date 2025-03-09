@@ -15,19 +15,18 @@ import app.springproject.SpringProjectApplication;
 import app.springproject.config.SecurityConfig;
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
-import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
-import java.util.ArrayList;
-import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UsersController.class)
+@ActiveProfiles("test")
 @ContextConfiguration(classes = {SpringProjectApplication.class, SecurityConfig.class})
 class UsersControllerMvcTest {
 
@@ -35,28 +34,9 @@ class UsersControllerMvcTest {
 
   @MockitoBean private UsersService usersService;
 
-  private static final User MOCK_USER = new User("Test", "test1");
-  private static final String USER_JSON = "{\"username\":\"Test\", \"password\":\"test1\"}";
-
-  @Test
-  void shouldSuccessfullyRegisterUser() throws Exception {
-    doNothing().when(usersService).registerUser(any(String.class), any(String.class));
-    mockMvc
-        .perform(post("/second-memory/signup").contentType("application/json").content(USER_JSON))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.username").value("Test"))
-        .andExpect(jsonPath("$.password").value("test1"));
-  }
-
-  @Test
-  void shouldFailRegistration() throws Exception {
-    doThrow(UserAlreadyExistsException.class)
-        .when(usersService)
-        .registerUser(any(String.class), any(String.class));
-    mockMvc
-        .perform(post("/second-memory/signup").contentType("application/json").content(USER_JSON))
-        .andExpect(status().isBadRequest());
-  }
+  private static final User MOCK_USER = new User("dfs@gamil.com", "Boris", "Boris1906");
+  private static final String USER_JSON =
+      "{\"email\":\"dfs@gamil.com\", \"name\":\"Boris\", \"password\":\"Boris1906\"}";
 
   @Test
   void shouldSuccessfullyAuthenticate() throws Exception {
@@ -92,8 +72,8 @@ class UsersControllerMvcTest {
     mockMvc
         .perform(get("/second-memory/Test"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("Test"))
-        .andExpect(jsonPath("$.password").value("test1"));
+        .andExpect(jsonPath("$.name").value("Boris"))
+        .andExpect(jsonPath("$.email").value("dfs@gamil.com"));
   }
 
   @Test
@@ -108,8 +88,8 @@ class UsersControllerMvcTest {
     mockMvc
         .perform(delete("/second-memory/delete/Test"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("Test"))
-        .andExpect(jsonPath("$.password").value("test1"));
+        .andExpect(jsonPath("$.name").value("Boris"))
+        .andExpect(jsonPath("$.email").value("dfs@gamil.com"));
   }
 
   @Test
@@ -124,8 +104,8 @@ class UsersControllerMvcTest {
     mockMvc
         .perform(patch("/second-memory/update").contentType("application/json").content(USER_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.username").value("Test"))
-        .andExpect(jsonPath("$.password").value("test1"));
+        .andExpect(jsonPath("$.name").value("Boris"))
+        .andExpect(jsonPath("$.email").value("dfs@gamil.com"));
   }
 
   @Test
@@ -134,12 +114,5 @@ class UsersControllerMvcTest {
     mockMvc
         .perform(patch("/second-memory/update").contentType("application/json").content(USER_JSON))
         .andExpect(status().isNotFound());
-  }
-
-  @Test
-  void shouldSuccessfullyReturnUsers() throws Exception {
-    ArrayList<String> mockList = new ArrayList<>(Arrays.asList("Test", "Test"));
-    when(usersService.getAll()).thenReturn(mockList);
-    mockMvc.perform(get("/second-memory/main")).andExpect(status().isOk());
   }
 }

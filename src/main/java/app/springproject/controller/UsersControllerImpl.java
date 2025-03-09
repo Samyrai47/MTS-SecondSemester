@@ -1,8 +1,8 @@
 package app.springproject.controller;
 
+import app.springproject.dto.UserDto;
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
-import app.springproject.exception.DatabaseException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
@@ -32,45 +32,46 @@ public class UsersControllerImpl implements UsersController {
   @PostMapping("/signin")
   public ResponseEntity<String> authenticate(@RequestBody User user)
       throws UserNotFoundException, AuthenticationDataMismatchException {
-    usersService.authenticate(user.username(), user.password());
-    log.info("Successfully logged in with name {}", user.username());
+    usersService.authenticate(user.getEmail(), user.getPassword());
+    log.info("Successfully logged in with name {}", user.getEmail());
     return ResponseEntity.ok("You have successfully logged in!");
   }
 
   @Override
   @PostMapping("/signup")
-  public ResponseEntity<User> registerUser(@RequestBody User user)
-      throws UserAlreadyExistsException {
-    usersService.registerUser(user.username(), user.password());
-    return ResponseEntity.status(201).body(user);
+  public ResponseEntity<UserDto> registerUser(@RequestBody User user)
+      throws UserAlreadyExistsException, UserNotFoundException {
+    usersService.registerUser(user);
+    return ResponseEntity.status(201)
+        .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
   @PatchMapping("/update")
-  public ResponseEntity<User> updateUser(@RequestBody User user) throws UserNotFoundException {
+  public ResponseEntity<UserDto> updateUser(@RequestBody User user) throws UserNotFoundException {
     usersService.updateUser(user);
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
-  @DeleteMapping("/delete/{username}")
-  public ResponseEntity<User> deleteUser(@PathVariable String username)
+  @DeleteMapping("/delete/{email}")
+  public ResponseEntity<UserDto> deleteUser(@PathVariable String email)
       throws UserNotFoundException {
-    User user = usersService.deleteUser(username);
-    return ResponseEntity.ok(user);
+    User user = usersService.deleteUser(email);
+    return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
   @GetMapping("/main")
-  public ResponseEntity<List<String>> getAll() {
+  public ResponseEntity<List<UserDto>> getAll() {
     return ResponseEntity.ok(usersService.getAll());
   }
 
   @Override
   @GetMapping("/{username}")
-  public ResponseEntity<User> getByUsername(@PathVariable String username)
-      throws UserNotFoundException, DatabaseException {
+  public ResponseEntity<UserDto> getByUsername(@PathVariable String username)
+      throws UserNotFoundException {
     User user = usersService.getByUsername(username);
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 }

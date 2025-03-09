@@ -1,8 +1,8 @@
 package app.springproject.controller;
 
+import app.springproject.dto.UserDto;
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
-import app.springproject.exception.DatabaseException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +39,8 @@ public interface UsersController {
       responseCode = "400",
       description = "BAD_REQUEST | Пользователь уже зарегистрирован",
       content = @Content)
-  ResponseEntity<User> registerUser(@RequestBody User user) throws UserAlreadyExistsException;
+  ResponseEntity<UserDto> registerUser(@RequestBody User user)
+      throws UserAlreadyExistsException, UserNotFoundException;
 
   @Operation(summary = "Изменить данные пользователя")
   @ApiResponse(responseCode = "200", description = "Данные о пользователе изменены")
@@ -47,7 +48,7 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  ResponseEntity<User> updateUser(@RequestBody User user) throws UserNotFoundException;
+  ResponseEntity<UserDto> updateUser(@RequestBody User user) throws UserNotFoundException;
 
   @Operation(summary = "Удалить пользователя")
   @ApiResponse(responseCode = "200", description = "Пользователь удален")
@@ -55,7 +56,7 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  ResponseEntity<User> deleteUser(@PathVariable String username) throws UserNotFoundException;
+  ResponseEntity<UserDto> deleteUser(@PathVariable String username) throws UserNotFoundException;
 
   @Operation(summary = "Найти пользователя по имени")
   @ApiResponse(responseCode = "200", description = "Пользователь найден")
@@ -63,10 +64,10 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  ResponseEntity<User> getByUsername(@Parameter(description = "Имя пользователя") String username)
-      throws UserNotFoundException, DatabaseException;
+  ResponseEntity<UserDto> getByUsername(
+      @Parameter(description = "Имя пользователя") String username) throws UserNotFoundException;
 
   @Operation(summary = "Вывести всех пользователей")
   @ApiResponse(responseCode = "200", description = "Пользователи выведены")
-  ResponseEntity<List<String>> getAll();
+  ResponseEntity<List<UserDto>> getAll();
 }
