@@ -17,22 +17,20 @@ import lombok.Setter;
 @Entity
 @Table(name = "files")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class File {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Getter
   private Long id;
 
   @NotNull(message = "Name should be filled")
-  @Getter
   @Setter
   private String name;
 
-  @Getter @Setter private String content;
+  @Setter private String content;
 
   @ManyToOne
   @JoinColumn(name = "user_id", referencedColumnName = "id")
-  @Getter
   private User user;
 
   public File(String name, String content, User user) {

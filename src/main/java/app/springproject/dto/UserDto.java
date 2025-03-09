@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
+@Getter
 public class UserDto {
-  @Getter private String email;
-  @Getter private String name;
-  @Getter private List<FileDto> files;
+  private String email;
+  private String name;
+  private List<FileDto> files;
 
   public UserDto(String email, String name, List<File> files) {
     this.email = email;

@@ -19,28 +19,24 @@ import lombok.Setter;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Getter
   private Long id;
 
   @NotNull(message = "Email should be filled")
-  @Getter
   private String email;
 
   @NotNull(message = "Name should be filled")
-  @Getter
   @Setter
   private String name;
 
   @NotNull(message = "Password should be filled")
-  @Getter
   @Setter
   private String password;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  @Getter
   private List<File> files = new ArrayList<>();
 
   public User(String email, String name, String password) {
