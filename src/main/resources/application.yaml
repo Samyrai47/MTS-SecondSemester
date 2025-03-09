@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: springProject
+  security:
+    user:
+      name: 1
+      password: 1
+      roles: "ADMIN"
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude: shutdown
+      base-path: "/admin/actuator"
+  info:
+    env:
+      enabled: true
+info:
+  app:
+    name: "Second Memory"
+    description: "This is a file sharing service"
+    version: "1.0.0"
