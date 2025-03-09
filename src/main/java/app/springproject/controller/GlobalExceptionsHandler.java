@@ -1,7 +1,6 @@
 package app.springproject.controller;
 
 import app.springproject.exception.AuthenticationDataMismatchException;
-import app.springproject.exception.DatabaseException;
 import app.springproject.exception.FileAlreadyExistsException;
 import app.springproject.exception.FileNotFoundException;
 import app.springproject.exception.NumberGeneratorException;
@@ -29,11 +28,6 @@ public class GlobalExceptionsHandler {
   @ExceptionHandler(UserAlreadyExistsException.class)
   public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException exception) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
-  }
-
-  @ExceptionHandler(DatabaseException.class)
-  public ResponseEntity<String> handleDatabaseException(DatabaseException exception) {
-    return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(exception.getMessage());
   }
 
   @ExceptionHandler(RequestNotPermitted.class)
