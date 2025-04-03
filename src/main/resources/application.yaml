@@ -15,12 +15,18 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        id:
+          new_generator_mappings: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
+
     open-in-view: false
   flyway:
     enabled: true
     validate-on-migrate: true
+  kafka:
+    bootstrap-servers: localhost:29093
+topic-to-send-message: event-topic
 springdoc:
   swagger-ui:
     enabled: true

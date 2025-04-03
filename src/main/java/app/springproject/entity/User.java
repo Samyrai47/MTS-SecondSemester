@@ -26,6 +26,7 @@ public class User {
   private Long id;
 
   @NotNull(message = "Email should be filled")
+  @Setter
   private String email;
 
   @NotNull(message = "Name should be filled")

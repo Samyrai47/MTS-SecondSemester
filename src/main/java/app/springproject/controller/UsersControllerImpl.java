@@ -6,6 +6,7 @@ import app.springproject.exception.AuthenticationDataMismatchException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,16 +32,18 @@ public class UsersControllerImpl implements UsersController {
   @Override
   @PostMapping("/signin")
   public ResponseEntity<String> authenticate(@RequestBody User user)
-      throws UserNotFoundException, AuthenticationDataMismatchException {
+      throws UserNotFoundException, AuthenticationDataMismatchException, JsonProcessingException {
     usersService.authenticate(user.getEmail(), user.getPassword());
     log.info("Successfully logged in with name {}", user.getEmail());
-    return ResponseEntity.ok("You have successfully logged in!");
+    return ResponseEntity.ok()
+        .header("userId", String.valueOf(user.getId()))
+        .body("You have successfully logged in!");
   }
 
   @Override
   @PostMapping("/signup")
   public ResponseEntity<UserDto> registerUser(@RequestBody User user)
-      throws UserAlreadyExistsException, UserNotFoundException {
+      throws UserAlreadyExistsException, UserNotFoundException, JsonProcessingException {
     usersService.registerUser(user);
     return ResponseEntity.status(201)
         .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
@@ -48,15 +51,17 @@ public class UsersControllerImpl implements UsersController {
 
   @Override
   @PatchMapping("/update")
-  public ResponseEntity<UserDto> updateUser(@RequestBody User user) throws UserNotFoundException {
+  public ResponseEntity<UserDto> updateUser(@RequestBody User user) throws UserNotFoundException, JsonProcessingException {
     usersService.updateUser(user);
-    return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
+    return ResponseEntity.ok()
+        .header("userId", String.valueOf(user.getId()))
+        .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
   @DeleteMapping("/delete/{email}")
   public ResponseEntity<UserDto> deleteUser(@PathVariable String email)
-      throws UserNotFoundException {
+      throws UserNotFoundException, JsonProcessingException {
     User user = usersService.deleteUser(email);
     return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
@@ -72,6 +77,8 @@ public class UsersControllerImpl implements UsersController {
   public ResponseEntity<UserDto> getByUsername(@PathVariable String username)
       throws UserNotFoundException {
     User user = usersService.getByUsername(username);
-    return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
+    return ResponseEntity.ok()
+        .header("userId", String.valueOf(user.getId()))
+        .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 }
