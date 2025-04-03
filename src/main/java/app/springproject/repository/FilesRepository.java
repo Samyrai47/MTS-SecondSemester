@@ -1,15 +1,11 @@
 package app.springproject.repository;
 
-import app.springproject.exception.FileAlreadyExistsException;
-import app.springproject.exception.FileNotFoundException;
+import app.springproject.entity.File;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface FilesRepository {
-  void create(String name, String value) throws FileAlreadyExistsException;
-
-  void delete(String name);
-
-  void rename(String oldName, String newName)
-      throws FileNotFoundException, FileAlreadyExistsException;
-
-  void changeContent(String name, String value) throws FileNotFoundException;
+@Repository
+public interface FilesRepository extends JpaRepository<File, Long> {
+  Optional<File> findByNameEquals(String name);
 }

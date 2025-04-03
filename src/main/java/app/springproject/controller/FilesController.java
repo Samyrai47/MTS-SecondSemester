@@ -1,8 +1,10 @@
 package app.springproject.controller;
 
-import app.springproject.entity.File;
+import app.springproject.dto.CreateFileRequest;
+import app.springproject.dto.FileDto;
 import app.springproject.exception.FileAlreadyExistsException;
 import app.springproject.exception.FileNotFoundException;
+import app.springproject.exception.UserNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,12 +22,14 @@ public interface FilesController {
       responseCode = "400",
       description = "BAD_REQUEST | Файл с таким названием уже существует",
       content = @Content)
-  ResponseEntity<File> createFile(@PathVariable String fileName, @RequestBody String content)
-      throws FileAlreadyExistsException;
+  ResponseEntity<FileDto> createFile(
+      @PathVariable String fileName, @RequestBody CreateFileRequest request)
+      throws FileAlreadyExistsException, UserNotFoundException;
 
   @Operation(summary = "Удаление файла")
   @ApiResponse(responseCode = "200", description = "Файл удален", content = @Content)
-  ResponseEntity<String> deleteFile(@PathVariable String fileName);
+  ResponseEntity<String> deleteFile(@PathVariable Long fileId)
+      throws FileNotFoundException, UserNotFoundException;
 
   @Operation(summary = "Переименование файла")
   @ApiResponse(responseCode = "200", description = "Файл переименован", content = @Content)
