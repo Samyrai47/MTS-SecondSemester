@@ -6,6 +6,26 @@ spring:
       name: 1
       password: 1
       roles: "ADMIN"
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/second_memory"
+    username: postgres
+    password: password
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        id:
+          new_generator_mappings: true
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    validate-on-migrate: true
+  kafka:
+    bootstrap-servers: localhost:29093
+topic-to-send-message: audit-topic
 springdoc:
   swagger-ui:
     enabled: true

@@ -1,9 +1,13 @@
 package app.springproject.controller;
 
+import app.springproject.dto.CreateFileRequest;
+import app.springproject.dto.FileDto;
 import app.springproject.entity.File;
 import app.springproject.exception.FileAlreadyExistsException;
 import app.springproject.exception.FileNotFoundException;
+import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.FilesService;
+import app.springproject.service.UsersService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
@@ -26,24 +30,27 @@ import org.springframework.web.bind.annotation.RestController;
 @CircuitBreaker(name = "apiCircuitBreaker")
 public class FilesControllerImpl implements FilesController {
   private final FilesService filesService;
+  private final UsersService usersService;
 
   @Override
   @PostMapping("/{fileName}")
-  public ResponseEntity<File> createFile(@PathVariable String fileName, @RequestBody String content)
-      throws FileAlreadyExistsException {
+  public ResponseEntity<FileDto> createFile(
+      @PathVariable String fileName, @RequestBody CreateFileRequest request)
+      throws FileAlreadyExistsException, UserNotFoundException {
     log.info("Controller -> received create request for {}", fileName);
-    filesService.createFile(fileName, content);
+    File file = usersService.createFile(request.userId(), fileName, request.content());
     log.info("Controller -> added file {}", fileName);
-    return ResponseEntity.status(HttpStatus.CREATED).body(new File(fileName, content));
+    return ResponseEntity.status(HttpStatus.CREATED).body(new FileDto(file));
   }
 
   @Override
-  @DeleteMapping("/{fileName}")
-  public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
-    log.info("Controller -> received delete request for {}", fileName);
-    filesService.removeFile(fileName);
-    log.info("Controller -> deleted file {}", fileName);
-    return ResponseEntity.ok(String.format("File %s was deleted", fileName));
+  @DeleteMapping("/{fileId}")
+  public ResponseEntity<String> deleteFile(@PathVariable Long fileId)
+      throws FileNotFoundException, UserNotFoundException {
+    log.info("Controller -> received delete request for {}", fileId);
+    usersService.deleteFile(fileId);
+    log.info("Controller -> deleted file {}", fileId);
+    return ResponseEntity.ok(String.format("File %s was deleted", fileId));
   }
 
   @Override
@@ -52,7 +59,7 @@ public class FilesControllerImpl implements FilesController {
       @PathVariable String oldName, @RequestBody String newName)
       throws FileAlreadyExistsException, FileNotFoundException {
     log.info("Controller -> received rename request from {} to {}", oldName, newName);
-    filesService.renameFile(oldName, newName);
+    filesService.updateFileName(oldName, newName);
     log.info("Controller -> renamed file {}", newName);
     return ResponseEntity.ok(String.format("File %s was renamed to %s", oldName, newName));
   }
