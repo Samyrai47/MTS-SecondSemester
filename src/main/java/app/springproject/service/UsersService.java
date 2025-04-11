@@ -4,6 +4,7 @@ import app.springproject.dto.Action;
 import app.springproject.dto.MessageDto;
 import app.springproject.dto.UserDto;
 import app.springproject.entity.File;
+import app.springproject.entity.OutboxRecord;
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
 import app.springproject.exception.FileAlreadyExistsException;
@@ -11,6 +12,7 @@ import app.springproject.exception.FileNotFoundException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.repository.FilesRepository;
+import app.springproject.repository.OutboxRepository;
 import app.springproject.repository.UsersRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class UsersService {
   private final UsersRepository userRepository;
   private final FilesRepository filesRepository;
-  private final KafkaProducerService kafkaService;
+  private final OutboxRepository outboxRepository;
 
   public void authenticate(String email, String password)
       throws AuthenticationDataMismatchException, UserNotFoundException, JsonProcessingException {
@@ -37,10 +39,11 @@ public class UsersService {
       throw new AuthenticationDataMismatchException("Wrong password for user " + user.getEmail());
     }
     log.info("Successful authentication for {}", email);
-    kafkaService.sendMessage(new MessageDto(user.getId(), Action.SELECT));
+    outboxRepository.save(new OutboxRecord(new MessageDto(user.getId(), Action.SELECT)));
   }
 
-  public void registerUser(User newUser) throws UserAlreadyExistsException, UserNotFoundException, JsonProcessingException {
+  public void registerUser(User newUser)
+      throws UserAlreadyExistsException, UserNotFoundException, JsonProcessingException {
     log.info("Some service logic about registration");
     userRepository
         .findByEmailEquals(newUser.getEmail())
@@ -50,7 +53,7 @@ public class UsersService {
                   "User with email " + user.getEmail() + " already exists.");
             });
     userRepository.save(newUser);
-    kafkaService.sendMessage(new MessageDto(newUser.getId(), Action.INSERT));
+    outboxRepository.save(new OutboxRecord(new MessageDto(newUser.getId(), Action.INSERT)));
   }
 
   @Async
@@ -63,14 +66,14 @@ public class UsersService {
     user.setName(updatedUser.getName());
     user.setPassword(updatedUser.getPassword());
     userRepository.save(user);
-    kafkaService.sendMessage(new MessageDto(updatedUser.getId(), Action.UPDATE));
+    outboxRepository.save(new OutboxRecord(new MessageDto(updatedUser.getId(), Action.UPDATE)));
   }
 
   public User deleteUser(String email) throws UserNotFoundException, JsonProcessingException {
     User user = userRepository.findByEmailEquals(email).orElseThrow(UserNotFoundException::new);
     log.info("Some service logic about deleting");
     userRepository.delete(user);
-    kafkaService.sendMessage(new MessageDto(user.getId(), Action.DELETE));
+    outboxRepository.save(new OutboxRecord(new MessageDto(user.getId(), Action.DELETE)));
     return user;
   }
 

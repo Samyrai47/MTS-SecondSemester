@@ -1,6 +1,6 @@
 package app.springproject.service;
 
-import app.springproject.dto.MessageDto;
+import app.springproject.entity.OutboxRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.concurrent.CompletableFuture;
@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class KafkaProducerService {
-
   private final KafkaTemplate<String, String> kafkaTemplate;
-
   private final ObjectMapper objectMapper;
   private final String topic;
 
@@ -26,8 +24,8 @@ public class KafkaProducerService {
     this.topic = topic;
   }
 
-  public void sendMessage(MessageDto messageDto) throws JsonProcessingException {
-    String message = objectMapper.writeValueAsString(messageDto);
+  public void sendMessage(OutboxRecord outboxRecord) throws JsonProcessingException {
+    String message = objectMapper.writeValueAsString(outboxRecord);
     CompletableFuture<SendResult<String, String>> sendResult = kafkaTemplate.send(topic, message);
   }
 }

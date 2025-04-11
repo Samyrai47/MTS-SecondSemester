@@ -1,0 +1,5 @@
+CREATE TABLE outbox
+(
+    id BIGSERIAL PRIMARY KEY,
+    value TEXT NOT NULL
+);
