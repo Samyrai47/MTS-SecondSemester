@@ -49,7 +49,8 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  ResponseEntity<UserDto> updateUser(@RequestBody User user) throws UserNotFoundException, JsonProcessingException;
+  ResponseEntity<UserDto> updateUser(@RequestBody User user)
+      throws UserNotFoundException, JsonProcessingException;
 
   @Operation(summary = "Удалить пользователя")
   @ApiResponse(responseCode = "200", description = "Пользователь удален")
@@ -57,7 +58,8 @@ public interface UsersController {
       responseCode = "404",
       description = "NOT_FOUND | Пользователь с такими данными не найден",
       content = @Content)
-  ResponseEntity<UserDto> deleteUser(@PathVariable String username) throws UserNotFoundException, JsonProcessingException;
+  ResponseEntity<UserDto> deleteUser(@PathVariable String username)
+      throws UserNotFoundException, JsonProcessingException;
 
   @Operation(summary = "Найти пользователя по имени")
   @ApiResponse(responseCode = "200", description = "Пользователь найден")

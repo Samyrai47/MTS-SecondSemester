@@ -18,7 +18,7 @@ spring:
         id:
           new_generator_mappings: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     open-in-view: false
   flyway:
     enabled: true
@@ -31,6 +31,15 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        all: true
+    tags:
+      service: "user-service"
   endpoints:
     web:
       exposure:
