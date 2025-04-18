@@ -1,14 +1,17 @@
 package app.springproject.controller;
 
+import app.springproject.dto.UserDto;
 import app.springproject.entity.User;
 import app.springproject.exception.AuthenticationDataMismatchException;
-import app.springproject.exception.DatabaseException;
 import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import app.springproject.service.UsersService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,55 +25,86 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequiredArgsConstructor
 @RequestMapping("/second-memory")
 @RateLimiter(name = "rateLimiterAPI")
+@Timed(
+    value = "request.duration",
+    description = "HTTP requests duration",
+    percentiles = {0.5, 0.95, 0.99},
+    histogram = true)
 public class UsersControllerImpl implements UsersController {
   private final UsersService usersService;
+  private final Counter usersRequest;
+  private final MeterRegistry registry;
+
+  public UsersControllerImpl(UsersService usersService, MeterRegistry registry) {
+    this.usersService = usersService;
+    this.usersRequest = Counter.builder("user.requests").tags("type", "total").register(registry);
+    this.registry = registry;
+  }
+
+  private Counter getUserRequestCounter(String type) {
+    return Counter.builder("user.requests")
+        .description("Number of user requests by type")
+        .tags("type", type)
+        .register(registry);
+  }
 
   @Override
   @PostMapping("/signin")
   public ResponseEntity<String> authenticate(@RequestBody User user)
-      throws UserNotFoundException, AuthenticationDataMismatchException {
-    usersService.authenticate(user.username(), user.password());
-    log.info("Successfully logged in with name {}", user.username());
-    return ResponseEntity.ok("You have successfully logged in!");
+      throws UserNotFoundException, AuthenticationDataMismatchException, JsonProcessingException {
+    getUserRequestCounter("authentication").increment();
+    usersService.authenticate(user.getEmail(), user.getPassword());
+    log.info("Successfully logged in with name {}", user.getEmail());
+    return ResponseEntity.ok()
+        .header("userId", String.valueOf(user.getId()))
+        .body("You have successfully logged in!");
   }
 
   @Override
   @PostMapping("/signup")
-  public ResponseEntity<User> registerUser(@RequestBody User user)
-      throws UserAlreadyExistsException {
-    usersService.registerUser(user.username(), user.password());
-    return ResponseEntity.status(201).body(user);
+  public ResponseEntity<UserDto> registerUser(@RequestBody User user)
+      throws UserAlreadyExistsException, UserNotFoundException, JsonProcessingException {
+    getUserRequestCounter("registration").increment();
+    usersService.registerUser(user);
+    return ResponseEntity.status(201)
+        .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
   @PatchMapping("/update")
-  public ResponseEntity<User> updateUser(@RequestBody User user) throws UserNotFoundException {
+  public ResponseEntity<UserDto> updateUser(@RequestBody User user)
+      throws UserNotFoundException, JsonProcessingException {
+    getUserRequestCounter("update").increment();
     usersService.updateUser(user);
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok()
+        .header("userId", String.valueOf(user.getId()))
+        .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
-  @DeleteMapping("/delete/{username}")
-  public ResponseEntity<User> deleteUser(@PathVariable String username)
-      throws UserNotFoundException {
-    User user = usersService.deleteUser(username);
-    return ResponseEntity.ok(user);
+  @DeleteMapping("/delete/{email}")
+  public ResponseEntity<UserDto> deleteUser(@PathVariable String email)
+      throws UserNotFoundException, JsonProcessingException {
+    getUserRequestCounter("deletion").increment();
+    User user = usersService.deleteUser(email);
+    return ResponseEntity.ok(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 
   @Override
   @GetMapping("/main")
-  public ResponseEntity<List<String>> getAll() {
+  public ResponseEntity<List<UserDto>> getAll() {
     return ResponseEntity.ok(usersService.getAll());
   }
 
   @Override
   @GetMapping("/{username}")
-  public ResponseEntity<User> getByUsername(@PathVariable String username)
-      throws UserNotFoundException, DatabaseException {
+  public ResponseEntity<UserDto> getByUsername(@PathVariable String username)
+      throws UserNotFoundException {
     User user = usersService.getByUsername(username);
-    return ResponseEntity.ok(user);
+    return ResponseEntity.ok()
+        .header("userId", String.valueOf(user.getId()))
+        .body(new UserDto(user.getEmail(), user.getName(), user.getFiles()));
   }
 }

@@ -1,23 +1,20 @@
 package app.springproject.repository;
 
 import app.springproject.entity.User;
-import app.springproject.exception.AuthenticationDataMismatchException;
-import app.springproject.exception.UserAlreadyExistsException;
 import app.springproject.exception.UserNotFoundException;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UsersRepository {
+@Repository
+public interface UsersRepository extends JpaRepository<User, Long> {
 
-  void authenticate(String name, String password)
-      throws AuthenticationDataMismatchException, UserNotFoundException;
+  Optional<User> findByEmailEquals(String username) throws UserNotFoundException;
 
-  void registerUser(User user) throws UserAlreadyExistsException;
+  Optional<User> findByNameLike(String name) throws UserNotFoundException;
 
-  void updateUser(User user) throws UserNotFoundException;
+  List<User> findAll();
 
-  User deleteUser(String username) throws UserNotFoundException;
-
-  User getByUsername(String username) throws UserNotFoundException;
-
-  List<String> getAll();
+  Optional<User> findById(Long userId);
 }
